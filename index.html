@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Node/Express, Pusher, Shared Workers</title>
+</head>
+<body>
+
+<h4>Node/Express, Pusher, Shared Workers</h4>
+<input id="message" value="" placeholder="Type something...">
+<button class="button" id="send_btn">Send</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pusher/7.0.3/pusher.min.js"
+        integrity="sha512-XVnzJolpkbYuMeISFQk6sQIkn3iYUbMX3f0STFUvT6f4+MZR6RJvlM5JFA2ritAN3hn+C0Bkckx2/+lCoJl3yg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    var isTabActive = true;
+    var worker = new SharedWorker('shared-workers.js');
+    var workerConnectionId;
+    var pusher = new Pusher('<PUSHER_APP_KEY>', {
+        cluster: '<PUSHER_APP_CLUSTER>',
+        encrypted: true
+    });
+
+    const channel = pusher.subscribe('channel_name');
+    channel.bind('message', data => {
+        if (isTabActive) {
+            worker.port.postMessage({
+                message: data.message,
+                type: 'ALERT',
+                port: workerConnectionId
+            });
+        }
+    });
+
+    worker.port.addEventListener('message', (e) => {
+        console.log(e.data);
+        if (isTabActive) {
+            // workerConnectionId = e.data.connectionId
+        } else {
+            alert(e.data.message)
+        }
+    });
+    worker.port.start();
+
+    let sendBtn = document.getElementById('send_btn');
+    sendBtn.addEventListener('click', () => {
+        let message = document.getElementById('message');
+        if (message.value) {
+            fetch('/send-message', {
+                method: 'post',
+                body: JSON.stringify({
+                    message: message.value
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            })
+                .then(() => {
+                    message.value = '';
+                })
+                .catch((err) => {
+                    // console.log(err);
+                });
+        } else {
+            alert("Message is empty!");
+        }
+    });
+
+    document.addEventListener("visibilitychange", e => {
+        isTabActive = document.visibilityState === "visible";
+    });
+</script>
+
+</body>
+</html>

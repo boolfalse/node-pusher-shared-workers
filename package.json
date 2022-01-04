@@ -1,0 +1,27 @@
+{
+  "name": "node-pusher-shared-workers",
+  "version": "1.0.0",
+  "description": "Real-time voNode.js app with plain JavaScript and Pusher",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/boolfalse/node-pusher-shared-workers.git"
+  },
+  "author": "boolfalse",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/boolfalse/node-pusher-shared-workers/issues"
+  },
+  "homepage": "https://github.com/boolfalse/node-pusher-shared-workers#readme",
+  "dependencies": {
+    "body-parser": "^1.19.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.2",
+    "nodemon": "^2.0.15",
+    "pusher": "^5.0.0"
+  }
+}
